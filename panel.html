@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Padres — Ortografía × Carné</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ─── Panel Navbar ──────────────────────────────────────────────────── -->
+  <nav class="panel-nav">
+    <div class="panel-nav-brand">🔐 Panel de Padres</div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="/" style="color:rgba(255,255,255,.7);font-size:13px;text-decoration:none">Ver app Dario</a>
+      <button id="btn-logout" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:20px;font-size:13px;cursor:pointer">Salir</button>
+    </div>
+  </nav>
+
+  <div class="panel-container">
+
+    <!-- ─── Loading ─────────────────────────────────────────────────────── -->
+    <div id="panel-loading" class="loading-screen" style="min-height:50vh">
+      <div class="spinner"></div>
+      <p>Cargando datos…</p>
+    </div>
+
+    <!-- ─── Content ─────────────────────────────────────────────────────── -->
+    <div id="panel-content" style="display:none">
+
+      <!-- 1. Resumen global -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <h2>Resumen global</h2>
+          <span id="summary-date" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+        <div class="panel-section-body">
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="s-val" id="s-mes">—</div>
+              <div class="s-lbl">Mes actual</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-dia">—</div>
+              <div class="s-lbl">Día actual</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-km">—</div>
+              <div class="s-lbl">KM totales</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-racha">—</div>
+              <div class="s-lbl">Racha actual</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-mejor-racha">—</div>
+              <div class="s-lbl">Mejor racha</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-infracciones">—</div>
+              <div class="s-lbl">Infracciones</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-aciertos">—</div>
+              <div class="s-lbl">Aciertos</div>
+            </div>
+            <div class="summary-card">
+              <div class="s-val" id="s-pct-ok">—</div>
+              <div class="s-lbl">% correcto</div>
+            </div>
+          </div>
+
+          <!-- Barra de hitos -->
+          <div style="margin-top:8px">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Progreso del carné</div>
+            <div class="hitos-bar" id="hitos-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Mapa de calor -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <h2>Mapa de asistencia (6 meses × 20 días)</h2>
+          <div style="display:flex;gap:12px;font-size:12px;color:var(--muted)">
+            <span>🟩 Completado</span>
+            <span>🟥 Con penalización</span>
+            <span>⬛ Pendiente</span>
+          </div>
+        </div>
+        <div class="panel-section-body" style="padding:16px">
+          <div class="heatmap-wrapper">
+            <div class="heatmap" id="heatmap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Errores frecuentes -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <h2>Errores frecuentes por tipo</h2>
+        </div>
+        <div class="panel-section-body" style="padding:0">
+          <table class="errors-table">
+            <thead>
+              <tr>
+                <th>Tipo de error</th>
+                <th>Intentos</th>
+                <th>Errores</th>
+                <th>% fallo</th>
+              </tr>
+            </thead>
+            <tbody id="errors-tbody">
+              <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted)">Sin datos todavía</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Controles de reinicio -->
+      <div class="panel-section">
+        <div class="panel-section-header">
+          <h2>Controles de reinicio</h2>
+        </div>
+        <div class="panel-section-body">
+          <div class="reset-controls">
+            <div class="reset-group">
+              <label>Reinicio total</label>
+              <button class="btn-danger" id="btn-reset-total">Reiniciar todo</button>
+            </div>
+            <div class="reset-group">
+              <label>Desde el mes</label>
+              <select id="sel-mes">
+                <option value="1">Mes 1</option>
+                <option value="2">Mes 2</option>
+                <option value="3">Mes 3</option>
+                <option value="4">Mes 4</option>
+                <option value="5">Mes 5</option>
+                <option value="6">Mes 6</option>
+              </select>
+              <button class="btn-danger" id="btn-reset-mes">Reiniciar desde mes</button>
+            </div>
+            <div class="reset-group">
+              <label>Desde el día</label>
+              <div style="display:flex;gap:8px">
+                <select id="sel-dia-mes">
+                  <option value="1">Mes 1</option>
+                  <option value="2">Mes 2</option>
+                  <option value="3">Mes 3</option>
+                  <option value="4">Mes 4</option>
+                  <option value="5">Mes 5</option>
+                  <option value="6">Mes 6</option>
+                </select>
+                <select id="sel-dia">
+                  <option value="1">Día 1</option>
+                  <option value="2">Día 2</option>
+                  <option value="3">Día 3</option>
+                  <option value="4">Día 4</option>
+                  <option value="5">Día 5</option>
+                  <option value="6">Día 6</option>
+                  <option value="7">Día 7</option>
+                  <option value="8">Día 8</option>
+                  <option value="9">Día 9</option>
+                  <option value="10">Día 10</option>
+                  <option value="11">Día 11</option>
+                  <option value="12">Día 12</option>
+                  <option value="13">Día 13</option>
+                  <option value="14">Día 14</option>
+                  <option value="15">Día 15</option>
+                  <option value="16">Día 16</option>
+                  <option value="17">Día 17</option>
+                  <option value="18">Día 18</option>
+                  <option value="19">Día 19</option>
+                  <option value="20">Día 20</option>
+                </select>
+              </div>
+              <button class="btn-danger" id="btn-reset-dia">Reiniciar desde día</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-content -->
+  </div><!-- /panel-container -->
+
+  <!-- ─── Confirm modal ──────────────────────────────────────────────────── -->
+  <div id="confirm-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-emoji">⚠️</div>
+      <h2 id="confirm-title">¿Confirmar reinicio?</h2>
+      <p id="confirm-desc">Esta acción no se puede deshacer.</p>
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <button class="btn-secondary" id="btn-cancel-reset" style="flex:1">Cancelar</button>
+        <button class="btn-danger" id="btn-confirm-reset" style="flex:1;border-radius:12px;padding:12px">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/panel.js"></script>
+</body>
+</html>

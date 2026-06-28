@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ortografía × Carné — Dario</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -24,153 +24,167 @@
     </div>
   </nav>
 
-  <!-- ─── Tabs ───────────────────────────────────────────────────────────── -->
-  <div class="tab-bar">
-    <button class="tab-btn active" data-view="dashboard" onclick="showView('dashboard')">🏠 Inicio</button>
-    <button class="tab-btn" data-view="topics" onclick="showView('topics')">🚦 Carné</button>
-  </div>
+  <div class="container">
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       DASHBOARD
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <div id="view-dashboard" class="view active">
+    <!-- ─── Loading ────────────────────────────────────────────────────── -->
+    <div id="view-loading" class="view active">
+      <div class="loading-screen">
+        <div class="spinner"></div>
+        <p>Cargando…</p>
+      </div>
+    </div>
 
-    <!-- Level card -->
-    <div class="card level-card" id="level-card">
-      <div class="level-top">
-        <div>
-          <div class="level-emoji" id="level-emoji">🚶</div>
-          <div class="level-name" id="level-name">Conductor novato</div>
-          <div class="level-prize" id="level-prize">Los padres empiezan a valorarlo</div>
+    <!-- ─── Error ──────────────────────────────────────────────────────── -->
+    <div id="view-error" class="view">
+      <div class="error-screen">
+        <p style="font-size:32px;margin-bottom:8px">⚠️</p>
+        <p id="error-msg" style="font-weight:700">Error al conectar con la base de datos.</p>
+        <p style="font-size:13px;margin-top:8px">Revisa tu conexión a internet e inténtalo de nuevo.</p>
+        <button class="btn-primary" style="margin-top:16px;max-width:200px" onclick="location.reload()">Reintentar</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         DASHBOARD
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="view-dashboard" class="view">
+
+      <!-- Penalty banner -->
+      <div id="penalty-banner" class="penalty-banner" style="display:none">
+        <span class="penalty-icon">⚠️</span>
+        <span id="penalty-msg"></span>
+      </div>
+
+      <!-- Nivel / mes card -->
+      <div class="card level-card">
+        <div class="level-top">
+          <div>
+            <div class="level-emoji" id="level-emoji">🚶</div>
+            <div class="level-name" id="level-name">Mes 1 — Ortografía normativa</div>
+            <div class="level-sub" id="level-sub">Completa el mes para desbloquear el siguiente hito</div>
+          </div>
+          <div class="level-badge">
+            <div class="level-pct" id="level-pct">0%</div>
+            <div class="level-pct-label">del carné</div>
+          </div>
         </div>
-        <div class="level-financing" id="level-financing">0%</div>
+        <div class="level-progress-bar">
+          <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="level-progress-label" id="level-progress-label">0 / 20 días</div>
       </div>
-      <div class="level-progress-bar">
-        <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-km">0</div>
+          <div class="stat-lbl">Kilómetros</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val orange" id="stat-racha">0</div>
+          <div class="stat-lbl">Racha días</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val red" id="stat-infracciones">0</div>
+          <div class="stat-lbl">Infracciones</div>
+        </div>
       </div>
-      <div class="level-progress-label" id="level-progress-label">0 / 8 días para Conductor en prácticas</div>
-    </div>
 
-    <!-- Stats row -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-val" id="stat-km">0</div>
-        <div class="stat-lbl">Kilómetros</div>
+      <!-- Day grid -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" id="month-title">Mes 1 — Días</h3>
+          <span class="card-sub" id="days-done-label">0 / 20</span>
+        </div>
+        <div class="day-grid" id="day-grid"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val orange" id="stat-racha">0</div>
-        <div class="stat-lbl">Racha días</div>
+
+      <!-- CTA -->
+      <div class="cta-area">
+        <button class="btn-primary" id="btn-start">Empezar ejercicio del día</button>
+        <p class="cta-hint" id="cta-hint"></p>
       </div>
-      <div class="stat-card">
-        <div class="stat-val green" id="stat-aciertos">0</div>
-        <div class="stat-lbl">Aciertos</div>
+
+      <!-- Milestones -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Hitos del carné — 6 meses</h3>
+        </div>
+        <div class="milestones" id="milestones"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val red" id="stat-multas">0</div>
-        <div class="stat-lbl">Infracciones</div>
+
+    </div><!-- /view-dashboard -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         EXERCISE
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="view-exercise" class="view">
+
+      <div class="exercise-nav">
+        <button class="btn-back" id="btn-back">← Volver</button>
+        <div class="exercise-progress" id="exercise-progress">Ejercicio 1 de 5</div>
+      </div>
+
+      <div class="exercise-tags">
+        <span class="tag tag-type"   id="ex-tipo"></span>
+        <span class="tag tag-diff"   id="ex-diff"></span>
+        <span class="tag tag-km"     id="ex-km"></span>
+        <span class="tag tag-fuente" id="ex-fuente" style="display:none"></span>
+      </div>
+
+      <div class="card exercise-card">
+        <div class="ex-context" id="ex-context" style="display:none"></div>
+        <p class="ex-question" id="ex-question"></p>
+        <div class="options-list" id="options-list"></div>
+      </div>
+
+      <button class="btn-primary" id="btn-submit" disabled>Comprobar respuesta</button>
+
+      <!-- Feedback -->
+      <div id="feedback-wrap" style="display:none">
+        <div class="feedback-card" id="feedback-card">
+          <div class="feedback-header"      id="feedback-header"></div>
+          <div class="feedback-explanation" id="feedback-explanation"></div>
+          <div class="feedback-multa"       id="feedback-multa" style="display:none"></div>
+          <div class="feedback-km"          id="feedback-km"    style="display:none"></div>
+        </div>
+        <button class="btn-primary" id="btn-next">Siguiente ejercicio →</button>
+      </div>
+
+    </div><!-- /view-exercise -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         DÍA COMPLETADO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="view-day-complete" class="view">
+      <div class="card" style="text-align:center;padding:32px 24px;margin-top:24px">
+        <div style="font-size:56px;margin-bottom:12px" id="complete-emoji">✅</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px" id="complete-title"></h2>
+        <p style="color:var(--muted);margin-bottom:8px" id="complete-desc"></p>
+        <p style="font-size:20px;font-weight:900;color:var(--blue);margin-bottom:24px" id="complete-km"></p>
+        <button class="btn-primary" id="btn-go-dashboard">Ver mi progreso</button>
       </div>
     </div>
 
-    <!-- Day grid -->
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Plan 20 días</h3>
-        <span class="card-sub" id="days-done-label"></span>
-      </div>
-      <div class="day-grid" id="day-grid"></div>
-    </div>
+  </div><!-- /container -->
 
-    <!-- CTA -->
-    <div class="cta-area">
-      <button class="btn-primary" id="btn-start" onclick="startNextExercise()">Empezar ejercicio del día</button>
-      <p class="cta-hint" id="cta-hint"></p>
-    </div>
-
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       EXERCISE
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <div id="view-exercise" class="view">
-
-    <div class="exercise-nav">
-      <button class="btn-back" onclick="confirmBack()">← Volver</button>
-      <div class="exercise-progress" id="exercise-progress"></div>
-    </div>
-
-    <div class="exercise-tags">
-      <span class="tag tag-type" id="ex-tipo"></span>
-      <span class="tag tag-diff" id="ex-diff"></span>
-      <span class="tag tag-km" id="ex-km"></span>
-    </div>
-
-    <div class="card exercise-card">
-      <div class="ex-context" id="ex-context"></div>
-      <p class="ex-question" id="ex-question"></p>
-      <div class="options-list" id="options-list"></div>
-    </div>
-
-    <button class="btn-primary" id="btn-submit" onclick="submitRespuesta()" disabled>Comprobar respuesta</button>
-
-    <!-- Feedback -->
-    <div id="feedback-wrap" style="display:none">
-      <div class="feedback-card" id="feedback-card">
-        <div class="feedback-header" id="feedback-header"></div>
-        <div class="feedback-explanation" id="feedback-explanation"></div>
-        <div class="feedback-multa" id="feedback-multa" style="display:none"></div>
-        <div class="feedback-km" id="feedback-km" style="display:none"></div>
-      </div>
-      <button class="btn-primary" id="btn-next" onclick="nextEjercicioOFin()">Siguiente ejercicio →</button>
-    </div>
-
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       TOPICS
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <div id="view-topics" class="view">
-
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Temas del Carné</h3>
-        <span class="card-sub">Se desbloquean ganando km</span>
-      </div>
-      <div class="topics-grid" id="topics-grid"></div>
-    </div>
-
-    <div class="card">
-      <h3 class="card-title">Acuerdo Padres–Dario</h3>
-      <div class="parent-levels" id="parent-levels"></div>
-    </div>
-
-  </div>
-
-  <!-- ─── km toast ────────────────────────────────────────────────────────── -->
+  <!-- ─── KM Toast ─────────────────────────────────────────────────────── -->
   <div id="km-toast" class="km-toast"></div>
 
-  <!-- ─── Level modal ─────────────────────────────────────────────────────── -->
-  <div id="level-modal" class="modal-overlay" style="display:none" onclick="closeLevelModal()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div class="modal-emoji" id="modal-emoji">🚗</div>
+  <!-- ─── Level-up Modal ───────────────────────────────────────────────── -->
+  <div id="level-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-emoji" id="modal-emoji">🎉</div>
       <h2 id="modal-title"></h2>
       <p id="modal-desc"></p>
       <p class="modal-prize" id="modal-prize"></p>
-      <button class="btn-primary" onclick="closeLevelModal()">¡A por más km!</button>
+      <button class="btn-primary" style="margin-top:16px" id="btn-close-modal">¡A por más km!</button>
     </div>
   </div>
 
-  <!-- ─── Day complete modal ──────────────────────────────────────────────── -->
-  <div id="day-modal" class="modal-overlay" style="display:none" onclick="closeDayModal()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div class="modal-emoji">✅</div>
-      <h2 id="day-modal-title"></h2>
-      <p id="day-modal-desc"></p>
-      <button class="btn-primary" onclick="closeDayModal()">Ver progreso</button>
-    </div>
-  </div>
-
-  <script src="data/temas.js"></script>
-  <script src="data/ejercicios.js"></script>
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/data/ejercicios.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
